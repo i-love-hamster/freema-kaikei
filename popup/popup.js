@@ -96,29 +96,18 @@ fetchBtn.addEventListener('click', async () => {
       year,
     });
 
-    console.log('[popup] response from service worker:', response);
-
     if (response.error) {
-      if (response.debug) {
-        console.warn('[popup] debug info:', response.debug);
-      }
-      const detail = response.debug
-        ? `responseUrl=${response.debug.responseUrl}` + (response.debug.htmlSnippet ? ` | HTML先頭: ${response.debug.htmlSnippet}` : '')
-        : response.message;
-      showStatus('error', errorMessage(response.error, detail));
+      showStatus('error', errorMessage(response.error, response.message));
       return;
     }
 
     // HTMLのパースはpopup側で行う（service workerはDOMParserが使えないため）
     allRecords = [];
-    for (const [i, html] of response.htmlPages.entries()) {
+    for (const html of response.htmlPages) {
       const records = parseMercariPage(html);
-      console.log(`[popup] parseMercariPage page=${i + 1}:`, records === null ? 'null' : `${records.length} records`);
       if (records === null) {
         if (allRecords.length === 0) {
-          const snippet = html.substring(0, 300).replace(/\s+/g, ' ');
-          console.warn('[popup] parseMercariPage returned null on page 1. HTML snippet:', snippet);
-          showStatus('error', errorMessage('NOT_LOGGED_IN', `HTML先頭: ${snippet}`));
+          showStatus('error', errorMessage('NOT_LOGGED_IN'));
           return;
         }
         break;

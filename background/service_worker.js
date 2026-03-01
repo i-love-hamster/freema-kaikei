@@ -21,18 +21,14 @@ async function fetchAllPages(year, sendResponse) {
   const htmlPages = [];
   let page = 1;
 
-  console.log(`[SW] fetchAllPages start: year=${year}`);
-
   try {
     while (true) {
       const url = `https://jp.mercari.com/mypage/listings/sold?year=${year}&page=${page}`;
-      console.log(`[SW] opening tab: page=${page} url=${url}`);
 
       let html;
       try {
         html = await fetchViaTab(url);
       } catch (e) {
-        console.error(`[SW] fetchViaTab error on page ${page}:`, e.message);
         sendResponse({ error: 'FETCH_FAILED', message: e.message });
         return;
       }
@@ -49,7 +45,6 @@ async function fetchAllPages(year, sendResponse) {
       }
 
       const rowCount = (html.match(/data-testid="sold-item-link"/g) || []).length;
-      console.log(`[SW] page=${page} rowCount=${rowCount} htmlLength=${html.length}`);
 
       htmlPages.push(html);
 
@@ -66,10 +61,8 @@ async function fetchAllPages(year, sendResponse) {
       await sleep(FETCH_DELAY);
     }
 
-    console.log(`[SW] done: totalPages=${htmlPages.length}`);
     sendResponse({ htmlPages });
   } catch (err) {
-    console.error('[SW] unexpected error:', err);
     sendResponse({ error: 'UNEXPECTED', message: err.message });
   }
 }
@@ -85,7 +78,6 @@ async function fetchViaTab(url) {
   try {
     // タブのロード完了を待つ
     await waitForTabComplete(tabId);
-    console.log(`[SW] tab loaded: tabId=${tabId}`);
 
     // JS描画完了（table tbody の出現）を待ってからHTML取得
     const results = await chrome.scripting.executeScript({
