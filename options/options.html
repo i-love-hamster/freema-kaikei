@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>設定 - フリマ会計CSV</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>設定</h1>
+
+    <section class="section">
+      <h2>会計ソフト</h2>
+      <select id="saas-type">
+        <option value="freee">freee</option>
+        <option value="moneyforward">マネーフォワードクラウド</option>
+      </select>
+    </section>
+
+    <section class="section">
+      <h2>勘定科目</h2>
+      <table class="account-table">
+        <tbody>
+          <tr>
+            <td class="label">売上勘定科目<span class="side">（貸方）</span></td>
+            <td><input type="text" id="account-sales" placeholder="売上高"></td>
+          </tr>
+          <tr>
+            <td class="label">未収金勘定科目<span class="side">（借方）</span></td>
+            <td><input type="text" id="account-receivable" placeholder="売掛金"></td>
+          </tr>
+          <tr>
+            <td class="label">手数料勘定科目<span class="side">（借方）</span></td>
+            <td><input type="text" id="account-commission" placeholder="支払手数料"></td>
+          </tr>
+          <tr>
+            <td class="label">送料勘定科目<span class="side">（借方）</span></td>
+            <td><input type="text" id="account-shipping" placeholder="荷造運賃"></td>
+          </tr>
+          <tr>
+            <td class="label">他費用勘定科目<span class="side">（借方）</span></td>
+            <td><input type="text" id="account-other-cost" placeholder="広告宣伝費"></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="actions">
+      <button id="save-btn">保存</button>
+      <span id="save-msg" class="save-msg hidden">✓ 保存しました</span>
+    </div>
+  </div>
+  <script src="options.js" type="module"></script>
+</body>
+</html>

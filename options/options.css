@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  font-size: 14px;
+  color: #333;
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 520px;
+  margin: 28px auto;
+  padding: 28px 32px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 28px;
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+.section h2 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+#saas-type {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+  color: #333;
+}
+
+#saas-type:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.account-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.account-table tr + tr td {
+  padding-top: 12px;
+}
+
+.account-table .label {
+  width: 52%;
+  font-size: 13px;
+  padding-right: 14px;
+  color: #444;
+  vertical-align: middle;
+}
+
+.account-table .side {
+  color: #aaa;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.account-table input {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #333;
+}
+
+.account-table input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#save-btn {
+  padding: 9px 28px;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#save-btn:hover {
+  background: #357abd;
+}
+
+.save-msg {
+  color: #27ae60;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hidden {
+  display: none !important;
+}

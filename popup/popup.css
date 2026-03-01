@@ -1,0 +1,290 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  font-size: 13px;
+  color: #333;
+  width: 440px;
+  background: #fff;
+}
+
+.container {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---- ヘッダー ---- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 17px;
+  cursor: pointer;
+  padding: 2px 6px;
+  color: #888;
+  border-radius: 5px;
+  line-height: 1;
+}
+
+.icon-btn:hover {
+  background: #f0f0f0;
+  color: #555;
+}
+
+/* ---- SaaS 切り替え ---- */
+.saas-row {
+  display: flex;
+  gap: 6px;
+}
+
+.saas-btn {
+  flex: 1;
+  padding: 7px 4px;
+  border: 1.5px solid #ddd;
+  border-radius: 7px;
+  background: #f9f9f9;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.saas-btn.active {
+  border-color: #4a90e2;
+  background: #eaf2fb;
+  color: #2c6fc0;
+}
+
+/* ---- 年選択 ---- */
+.fetch-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.year-select {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 13px;
+  background: #fff;
+  color: #333;
+}
+
+.year-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.primary-btn {
+  padding: 7px 18px;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.primary-btn:hover {
+  background: #357abd;
+}
+
+.primary-btn:disabled {
+  background: #b0b0b0;
+  cursor: not-allowed;
+}
+
+/* ---- ステータス ---- */
+.status {
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.status.loading {
+  background: #eaf2fb;
+  color: #2c6fc0;
+}
+
+.status.error {
+  background: #fde8e8;
+  color: #c0392b;
+}
+
+.status.success {
+  background: #e8fdf0;
+  color: #1a8a4a;
+}
+
+/* ---- 月フィルター ---- */
+.month-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.month-btn {
+  padding: 4px 9px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #f9f9f9;
+  color: #666;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.month-btn.active {
+  border-color: #4a90e2;
+  background: #eaf2fb;
+  color: #2c6fc0;
+  font-weight: 700;
+}
+
+/* ---- 取引一覧 ---- */
+.list-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.selected-count {
+  font-size: 12px;
+  color: #555;
+  font-weight: 600;
+}
+
+.list-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: #4a90e2;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.text-btn:hover {
+  text-decoration: underline;
+}
+
+.transaction-list {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 7px;
+}
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  gap: 8px;
+  border-bottom: 1px solid #f2f2f2;
+  cursor: pointer;
+  transition: background 0.1s;
+  user-select: none;
+}
+
+.tx-item:last-child {
+  border-bottom: none;
+}
+
+.tx-item:hover {
+  background: #fafafa;
+}
+
+.tx-item.checked {
+  background: #f0f6ff;
+}
+
+.tx-checkbox {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #4a90e2;
+}
+
+.tx-date {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 42px;
+}
+
+.tx-title {
+  flex: 1;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
+}
+
+.tx-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---- エクスポート ---- */
+.export-btn {
+  width: 100%;
+  padding: 11px;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.export-btn:hover {
+  background: #219a52;
+}
+
+.export-btn:disabled {
+  background: #b0b0b0;
+  cursor: not-allowed;
+}
+
+/* ---- ユーティリティ ---- */
+.hidden {
+  display: none !important;
+}

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "フリマ会計CSV",
+  "version": "1.0.0",
+  "description": "フリマサイトの販売履歴から会計SaaS用の仕訳インポートCSVを生成します",
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["https://jp.mercari.com/*"],
+  "background": {
+    "service_worker": "background/service_worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "フリマ会計CSV"
+  },
+  "options_page": "options/options.html"
+}
