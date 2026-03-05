@@ -20,11 +20,22 @@
       <button class="saas-btn" data-saas="moneyforward">マネーフォワード</button>
     </div>
 
-    <!-- 年選択 + 読み込みボタン -->
+    <!-- 年選択 + ページ番号 + 読み込みボタン -->
     <div class="fetch-row">
       <select id="year-select" class="year-select"></select>
-      <button id="fetch-btn" class="primary-btn">読み込む</button>
+      <input id="page-input" class="page-input" type="number" min="1" value="1" title="ページ番号">
+      <button id="fetch-btn" class="primary-btn">読み込み</button>
+      <button id="clear-btn" class="secondary-btn">クリア</button>
     </div>
+
+    <!-- ナビゲーションヒント -->
+    <div id="url-hint" class="url-hint">
+      ナビゲーション先:<br>
+      <a id="url-link" class="url-link" href="#" target="_blank"></a>
+    </div>
+
+    <!-- 読み込み済みインジケーター -->
+    <div id="loaded-indicator" class="loaded-indicator hidden"></div>
 
     <!-- ステータス表示 -->
     <div id="status" class="status hidden"></div>

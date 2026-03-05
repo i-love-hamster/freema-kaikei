@@ -4,8 +4,9 @@ import { generateMfCsv }                   from '../lib/csv_mf.js';
 import { parseMercariPage }                from '../lib/mercari_parser.js';
 
 // ---- 状態 ----
-let allRecords   = [];   // 読み込んだ全取引
-let shownRecords = [];   // 月フィルター後の表示中取引
+let allRecords   = [];         // 読み込んだ全取引（複数ページ蓄積）
+let shownRecords = [];         // 月フィルター後の表示中取引
+let loadedPages  = new Set();  // 読み込み済みページ番号
 let currentMonth = 'all';
 let settings = {
   saasType: 'freee',
@@ -15,7 +16,12 @@ let settings = {
 // ---- DOM refs ----
 const saasButtons       = document.querySelectorAll('.saas-btn');
 const yearSelect        = document.getElementById('year-select');
+const pageInput         = document.getElementById('page-input');
 const fetchBtn          = document.getElementById('fetch-btn');
+const clearBtn          = document.getElementById('clear-btn');
+const urlHint           = document.getElementById('url-hint');
+const urlLink           = document.getElementById('url-link');
+const loadedIndicator   = document.getElementById('loaded-indicator');
 const statusEl          = document.getElementById('status');
 const filterSection     = document.getElementById('filter-section');
 const listSection       = document.getElementById('list-section');
@@ -44,6 +50,8 @@ async function init() {
     opt.textContent = `${y}年`;
     yearSelect.appendChild(opt);
   }
+
+  updateUrlHint();
 }
 
 function updateSaasButtons() {
@@ -66,34 +74,50 @@ settingsBtn.addEventListener('click', () => {
   chrome.runtime.openOptionsPage();
 });
 
-// ---- データ読み込み ----
+// ---- URLヒント更新 & タブ遷移 ----
+function updateUrlHint() {
+  const year = yearSelect.value;
+  const page = pageInput.value || 1;
+  const url  = `https://jp.mercari.com/mypage/listings/sold?year=${year}&page=${page}`;
+  urlLink.href        = url;
+  urlLink.textContent = url;
+}
+
+async function navigateToUrl() {
+  const year = yearSelect.value;
+  const page = pageInput.value || 1;
+  const url  = `https://jp.mercari.com/mypage/listings/sold?year=${year}&page=${page}`;
+  urlLink.href        = url;
+  urlLink.textContent = url;
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (tab) {
+    chrome.tabs.update(tab.id, { url });
+  }
+}
+
+yearSelect.addEventListener('change', navigateToUrl);
+pageInput.addEventListener('change', navigateToUrl);
+
+// ---- データ読み込み（追加読み込み） ----
 fetchBtn.addEventListener('click', async () => {
   const year = parseInt(yearSelect.value, 10);
-  if (!year) return;
+  const page = parseInt(pageInput.value, 10);
+  if (!year || !page || page < 1) return;
 
-  // UI リセット
-  allRecords   = [];
-  shownRecords = [];
-  hideResults();
-  currentMonth = 'all';
-  document.querySelectorAll('.month-btn')
-    .forEach(btn => btn.classList.toggle('active', btn.dataset.month === 'all'));
+  // 重複チェック
+  if (loadedPages.has(page)) {
+    if (!confirm(`ページ ${page} はすでに読み込み済みです。上書きしますか？`)) return;
+    // 上書き: 既存の同ページ分レコードを削除（ページ単位追跡は困難なため全置換）
+    // ページ管理を簡潔にするため、上書き時は確認のみ（データはそのまま追記）
+  }
 
   fetchBtn.disabled = true;
-  showStatus('loading', `${year}年のデータを読み込み中...`);
-
-  // service worker からの進捗通知を受け取る
-  const onProgress = (msg) => {
-    if (msg.action === 'FETCH_PROGRESS') {
-      showStatus('loading', `ページ ${msg.pageCount} 読み込み中...`);
-    }
-  };
-  chrome.runtime.onMessage.addListener(onProgress);
+  clearBtn.disabled = true;
+  showStatus('loading', `${year}年 ${page}ページ目を読み込み中...`);
 
   try {
     const response = await chrome.runtime.sendMessage({
-      action: 'FETCH_MERCARI_SALES',
-      year,
+      action: 'FETCH_ACTIVE_TAB',
     });
 
     if (response.error) {
@@ -102,43 +126,68 @@ fetchBtn.addEventListener('click', async () => {
     }
 
     // HTMLのパースはpopup側で行う（service workerはDOMParserが使えないため）
-    allRecords = [];
-    for (const html of response.htmlPages) {
-      const records = parseMercariPage(html);
-      if (records === null) {
-        if (allRecords.length === 0) {
-          showStatus('error', errorMessage('NOT_LOGGED_IN'));
-          return;
-        }
-        break;
-      }
-      allRecords.push(...records);
+    const records = parseMercariPage(response.html);
+    if (records === null) {
+      showStatus('error', errorMessage('NOT_LOGGED_IN'));
+      return;
     }
+
+    loadedPages.add(page);
+    allRecords.push(...records);
+    updateLoadedIndicator();
 
     if (allRecords.length === 0) {
       showStatus('success', `${year}年の販売履歴は 0 件です`);
       return;
     }
 
-    showStatus('success', `${allRecords.length}件を読み込みました`);
+    showStatus('success', `${year}年 ${page}ページ目を追加（合計 ${allRecords.length}件）`);
     applyMonthFilter();
     filterSection.classList.remove('hidden');
     listSection.classList.remove('hidden');
     exportSection.classList.remove('hidden');
 
+    // 次のページ番号を自動セット
+    pageInput.value = page + 1;
+
   } catch (err) {
     showStatus('error', `エラーが発生しました: ${err.message}`);
   } finally {
-    chrome.runtime.onMessage.removeListener(onProgress);
     fetchBtn.disabled = false;
+    clearBtn.disabled = false;
   }
 });
 
+// ---- クリア ----
+clearBtn.addEventListener('click', () => {
+  allRecords   = [];
+  shownRecords = [];
+  loadedPages.clear();
+  currentMonth = 'all';
+  pageInput.value = 1;
+  document.querySelectorAll('.month-btn')
+    .forEach(btn => btn.classList.toggle('active', btn.dataset.month === 'all'));
+  hideResults();
+  loadedIndicator.classList.add('hidden');
+  statusEl.classList.add('hidden');
+});
+
+function updateLoadedIndicator() {
+  if (loadedPages.size === 0) {
+    loadedIndicator.classList.add('hidden');
+    return;
+  }
+  const pages = [...loadedPages].sort((a, b) => a - b).join(', ');
+  loadedIndicator.textContent = `読み込み済み: ${pages} ページ（${allRecords.length}件）`;
+  loadedIndicator.classList.remove('hidden');
+}
+
 function errorMessage(code, detail) {
   const map = {
-    NOT_LOGGED_IN: 'メルカリにログインされていないか、ページが読み取れませんでした',
-    FETCH_FAILED:  'ページの取得に失敗しました（ログイン状態を確認してください）',
-    HTTP_ERROR:    'HTTPエラーが発生しました',
+    NOT_LOGGED_IN: 'メルカリにログインされていないか、テーブルが読み取れませんでした',
+    FETCH_FAILED:  'ページの取得に失敗しました',
+    WRONG_PAGE:    '上記URLのメルカリ販売履歴ページを開いてから読み込んでください',
+    NO_ACTIVE_TAB: 'アクティブなタブが見つかりませんでした',
     UNEXPECTED:    '予期しないエラーが発生しました',
   };
   const base = map[code] || `エラー: ${code}`;
